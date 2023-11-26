@@ -7,7 +7,7 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Phanindra Akula/Site Title"
+title                    : "Phanindra Akula"
 title_separator          : "-"
 name                     : &name "Phanindra Akula"
 description              : &description "Embedded Systems Engineer, Ph.D. Student"

@@ -13,7 +13,7 @@
 
 body{
 background:#121212;
-color:#ffffff;
+color:white;
 font-family:Arial;
 text-align:center;
 margin:0;
@@ -25,7 +25,6 @@ margin-bottom:5px;
 }
 
 #datetime{
-font-size:16px;
 color:#bbbbbb;
 margin-bottom:20px;
 }
@@ -33,7 +32,7 @@ margin-bottom:20px;
 #reader{
 width:320px;
 margin:auto;
-display:none;
+margin-top:15px;
 }
 
 button{
@@ -41,10 +40,10 @@ button{
 background:#1e88e5;
 color:white;
 border:none;
-padding:14px 22px;
-font-size:18px;
-border-radius:8px;
-margin-top:10px;
+padding:12px 18px;
+font-size:16px;
+border-radius:6px;
+margin:5px;
 
 }
 
@@ -56,15 +55,15 @@ background:#1565c0;
 
 display:none;
 background:#1f1f1f;
-padding:20px;
+padding:15px;
 margin-top:20px;
 border-radius:10px;
 
 }
 
 .field{
-font-size:18px;
 margin:8px;
+font-size:18px;
 }
 
 </style>
@@ -78,6 +77,8 @@ margin:8px;
 <div id="datetime"></div>
 
 <button onclick="startScanner()">Start Scan</button>
+<button onclick="stopScanner()">Stop Scan</button>
+<button onclick="switchCamera()">Switch Camera</button>
 
 <div id="reader"></div>
 
@@ -97,6 +98,8 @@ margin:8px;
 <script>
 
 let html5QrCode;
+let cameras=[];
+let cameraIndex=0;
 let scanned=false;
 let formURL="";
 
@@ -116,7 +119,7 @@ setInterval(updateDateTime,1000);
 updateDateTime();
 
 
-/* Parse QR data */
+/* Parse QR Data */
 
 function parseData(text){
 
@@ -140,26 +143,38 @@ year:year
 }
 
 
-/* Start Camera */
+/* Start Scanner */
 
 function startScanner(){
 
-document.getElementById("reader").style.display="block";
+scanned=false;
 
 html5QrCode=new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras().then(devices=>{
 
-if(devices.length){
+cameras=devices;
 
-html5QrCode.start(
-devices[0].id,
-{
-fps:10,
-qrbox:250
-},
-onScanSuccess
-);
+if(cameras.length){
+
+/* Try to use back camera */
+
+cameraIndex=0;
+
+for(let i=0;i<cameras.length;i++){
+
+if(cameras[i].label.toLowerCase().includes("back") ||
+cameras[i].label.toLowerCase().includes("environment")){
+
+cameraIndex=i;
+
+break;
+
+}
+
+}
+
+startCamera(cameraIndex);
 
 }
 
@@ -168,7 +183,61 @@ onScanSuccess
 }
 
 
-/* On Scan */
+/* Start specific camera */
+
+function startCamera(index){
+
+html5QrCode.start(
+
+cameras[index].id,
+
+{
+fps:10,
+qrbox:250
+},
+
+onScanSuccess
+
+);
+
+}
+
+
+/* Stop Scanner */
+
+function stopScanner(){
+
+if(html5QrCode){
+
+html5QrCode.stop();
+
+}
+
+}
+
+
+/* Switch Camera */
+
+function switchCamera(){
+
+if(cameras.length>1){
+
+cameraIndex=(cameraIndex+1)%cameras.length;
+
+stopScanner();
+
+setTimeout(()=>{
+
+startCamera(cameraIndex);
+
+},500);
+
+}
+
+}
+
+
+/* QR Success */
 
 function onScanSuccess(decodedText){
 
@@ -176,7 +245,9 @@ if(scanned) return;
 
 scanned=true;
 
-html5QrCode.stop();
+navigator.vibrate(200);
+
+stopScanner();
 
 let data=parseData(decodedText);
 
@@ -189,7 +260,7 @@ document.getElementById("year").innerText=data.year;
 
 document.getElementById("preview").style.display="block";
 
-/* Google form URL */
+/* Google Form URL */
 
 formURL=
 "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url"

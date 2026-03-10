@@ -5,55 +5,66 @@
 
 <title>QR Attendance Scanner</title>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
 
 body{
+background:#121212;
+color:#ffffff;
 font-family:Arial;
 text-align:center;
-background:#f4f4f4;
 margin:0;
 padding:20px;
 }
 
 h2{
-color:#333;
+margin-bottom:5px;
+}
+
+#datetime{
+font-size:16px;
+color:#bbbbbb;
+margin-bottom:20px;
 }
 
 #reader{
 width:320px;
 margin:auto;
-}
-
-#preview{
 display:none;
-background:white;
-padding:20px;
-margin-top:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
 }
 
 button{
-padding:12px;
-font-size:16px;
-margin-top:10px;
-border:none;
-border-radius:5px;
-background:#4285F4;
+
+background:#1e88e5;
 color:white;
+border:none;
+padding:14px 22px;
+font-size:18px;
+border-radius:8px;
+margin-top:10px;
+
 }
 
 button:hover{
-background:#3367d6;
+background:#1565c0;
+}
+
+#preview{
+
+display:none;
+background:#1f1f1f;
+padding:20px;
+margin-top:20px;
+border-radius:10px;
+
 }
 
 .field{
-margin:10px;
 font-size:18px;
+margin:8px;
 }
 
 </style>
@@ -62,7 +73,11 @@ font-size:18px;
 
 <body>
 
-<h2>Scan QR Code</h2>
+<h2>QR Scanner</h2>
+
+<div id="datetime"></div>
+
+<button onclick="startScanner()">Start Scan</button>
 
 <div id="reader"></div>
 
@@ -81,10 +96,27 @@ font-size:18px;
 
 <script>
 
+let html5QrCode;
 let scanned=false;
 let formURL="";
 
-/* Parse QR text */
+/* Live Date Time */
+
+function updateDateTime(){
+
+let now=new Date();
+
+document.getElementById("datetime").innerText=
+now.toLocaleString();
+
+}
+
+setInterval(updateDateTime,1000);
+
+updateDateTime();
+
+
+/* Parse QR data */
 
 function parseData(text){
 
@@ -97,23 +129,52 @@ let year=parts[parts.length-1];
 let name=parts.slice(2,parts.length-1).join(" ");
 
 return{
+
 roll:roll,
 dept:dept,
 name:name,
 year:year
+
 };
 
 }
 
-/* After scan */
+
+/* Start Camera */
+
+function startScanner(){
+
+document.getElementById("reader").style.display="block";
+
+html5QrCode=new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(devices=>{
+
+if(devices.length){
+
+html5QrCode.start(
+devices[0].id,
+{
+fps:10,
+qrbox:250
+},
+onScanSuccess
+);
+
+}
+
+});
+
+}
+
+
+/* On Scan */
 
 function onScanSuccess(decodedText){
 
 if(scanned) return;
 
 scanned=true;
-
-/* Stop camera */
 
 html5QrCode.stop();
 
@@ -128,7 +189,7 @@ document.getElementById("year").innerText=data.year;
 
 document.getElementById("preview").style.display="block";
 
-/* Build Google Form URL */
+/* Google form URL */
 
 formURL=
 "https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url"
@@ -139,38 +200,14 @@ formURL=
 
 }
 
-/* Open Google Form */
+
+/* Open Form */
 
 function openForm(){
 
 window.location.href=formURL;
 
 }
-
-/* Start camera */
-
-const html5QrCode=new Html5Qrcode("reader");
-
-Html5Qrcode.getCameras().then(devices=>{
-
-if(devices && devices.length){
-
-html5QrCode.start(
-devices[0].id,
-{
-fps:10,
-qrbox:250
-},
-onScanSuccess
-);
-
-}
-
-}).catch(err=>{
-
-console.log(err);
-
-});
 
 </script>
 

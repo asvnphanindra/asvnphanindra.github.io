@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>QR Attendance Scanner</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+h2{
+color:#333;
+}
+
+#reader{
+width:320px;
+margin:auto;
+}
+
+#preview{
+display:none;
+background:white;
+padding:20px;
+margin-top:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+button{
+padding:12px;
+font-size:16px;
+margin-top:10px;
+border:none;
+border-radius:5px;
+background:#4285F4;
+color:white;
+}
+
+button:hover{
+background:#3367d6;
+}
+
+.field{
+margin:10px;
+font-size:18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Scan QR Code</h2>
+
+<div id="reader"></div>
+
+<div id="preview">
+
+<h3>Verify Details</h3>
+
+<div class="field">Roll: <span id="roll"></span></div>
+<div class="field">Department: <span id="dept"></span></div>
+<div class="field">Name: <span id="name"></span></div>
+<div class="field">Year: <span id="year"></span></div>
+
+<button onclick="openForm()">Open Google Form</button>
+
+</div>
+
+<script>
+
+let scanned=false;
+let formURL="";
+
+/* Parse QR text */
+
+function parseData(text){
+
+let parts=text.trim().split(/\s+/);
+
+let roll=parts[0];
+let dept=parts[1];
+let year=parts[parts.length-1];
+
+let name=parts.slice(2,parts.length-1).join(" ");
+
+return{
+roll:roll,
+dept:dept,
+name:name,
+year:year
+};
+
+}
+
+/* After scan */
+
+function onScanSuccess(decodedText){
+
+if(scanned) return;
+
+scanned=true;
+
+/* Stop camera */
+
+html5QrCode.stop();
+
+let data=parseData(decodedText);
+
+/* Show preview */
+
+document.getElementById("roll").innerText=data.roll;
+document.getElementById("dept").innerText=data.dept;
+document.getElementById("name").innerText=data.name;
+document.getElementById("year").innerText=data.year;
+
+document.getElementById("preview").style.display="block";
+
+/* Build Google Form URL */
+
+formURL=
+"https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url"
++"&entry.111111="+encodeURIComponent(data.roll)
++"&entry.222222="+encodeURIComponent(data.dept)
++"&entry.333333="+encodeURIComponent(data.name)
++"&entry.444444="+encodeURIComponent(data.year);
+
+}
+
+/* Open Google Form */
+
+function openForm(){
+
+window.location.href=formURL;
+
+}
+
+/* Start camera */
+
+const html5QrCode=new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(devices=>{
+
+if(devices && devices.length){
+
+html5QrCode.start(
+devices[0].id,
+{
+fps:10,
+qrbox:250
+},
+onScanSuccess
+);
+
+}
+
+}).catch(err=>{
+
+console.log(err);
+
+});
+
+</script>
+
+</body>
+
+</html>

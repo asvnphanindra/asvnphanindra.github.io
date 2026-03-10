@@ -70,8 +70,10 @@ font-size:18px;
 <button id="openBtn" onclick="openCamera()">Open Camera</button>
 
 <button id="switchBtn" onclick="switchCamera()" style="display:none;">Switch Camera</button>
-<button id="startBtn" onclick="startScanning()" style="display:none;">Start QR Scan</button>
-<button id="stopBtn" onclick="stopScanning()" style="display:none;">Stop Scan</button>
+
+<button id="startBtn" onclick="enableScan()" style="display:none;">Start QR Scan</button>
+
+<button id="stopBtn" onclick="disableScan()" style="display:none;">Stop Scan</button>
 
 <div id="reader"></div>
 
@@ -93,21 +95,28 @@ font-size:18px;
 let html5QrCode;
 let cameras=[];
 let cameraIndex=0;
-let scanning=false;
+
+let scanningEnabled=false;
+
 let formURL="";
 
-/* Live Date Time */
+
+/* live time */
 
 function updateDateTime(){
+
 document.getElementById("datetime").innerText =
 new Date().toLocaleString();
+
 }
 
 setInterval(updateDateTime,1000);
+
 updateDateTime();
 
 
-/* Parse QR */
+
+/* parse qr */
 
 function parseData(text){
 
@@ -128,7 +137,8 @@ year:year
 }
 
 
-/* Open Camera */
+
+/* open camera */
 
 function openCamera(){
 
@@ -142,7 +152,7 @@ if(cameras.length){
 
 cameraIndex=0;
 
-/* prefer back camera */
+/* prefer rear camera */
 
 for(let i=0;i<cameras.length;i++){
 
@@ -156,9 +166,7 @@ break;
 
 }
 
-startCamera(cameraIndex);
-
-/* show buttons */
+startCamera();
 
 document.getElementById("switchBtn").style.display="inline-block";
 document.getElementById("startBtn").style.display="inline-block";
@@ -171,54 +179,10 @@ document.getElementById("stopBtn").style.display="inline-block";
 }
 
 
-/* Start camera */
 
-function startCamera(index){
+/* start camera */
 
-html5QrCode.start(
-
-cameras[index].id,
-
-{
-fps:10,
-qrbox:250
-},
-
-()=>{}
-
-);
-
-}
-
-
-/* Switch camera */
-
-function switchCamera(){
-
-if(cameras.length>1){
-
-cameraIndex=(cameraIndex+1)%cameras.length;
-
-html5QrCode.stop().then(()=>{
-
-startCamera(cameraIndex);
-
-});
-
-}
-
-}
-
-
-/* Start QR detection */
-
-function startScanning(){
-
-if(scanning) return;
-
-scanning=true;
-
-html5QrCode.stop().then(()=>{
+function startCamera(){
 
 html5QrCode.start(
 
@@ -233,32 +197,59 @@ onScanSuccess
 
 );
 
+}
+
+
+
+/* switch camera */
+
+function switchCamera(){
+
+if(cameras.length>1){
+
+cameraIndex=(cameraIndex+1)%cameras.length;
+
+html5QrCode.stop().then(()=>{
+
+startCamera();
+
 });
 
 }
 
-
-/* Stop scanning */
-
-function stopScanning(){
-
-if(html5QrCode){
-
-html5QrCode.stop();
-scanning=false;
-
-}
-
 }
 
 
-/* QR success */
+
+/* enable qr scanning */
+
+function enableScan(){
+
+scanningEnabled=true;
+
+}
+
+
+
+/* disable qr scanning */
+
+function disableScan(){
+
+scanningEnabled=false;
+
+}
+
+
+
+/* qr success */
 
 function onScanSuccess(decodedText){
 
-navigator.vibrate(200);
+if(!scanningEnabled) return;
 
-stopScanning();
+scanningEnabled=false;
+
+navigator.vibrate(200);
 
 let data=parseData(decodedText);
 
@@ -279,7 +270,8 @@ formURL=
 }
 
 
-/* Open form */
+
+/* open form */
 
 function openForm(){
 

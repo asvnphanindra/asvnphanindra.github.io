@@ -67,10 +67,11 @@ font-size:18px;
 
 <div id="datetime"></div>
 
-<button onclick="openCamera()">Open Camera</button>
-<button onclick="switchCamera()">Switch Camera</button>
-<button onclick="startScanning()">Start QR Scan</button>
-<button onclick="stopScanning()">Stop Scan</button>
+<button id="openBtn" onclick="openCamera()">Open Camera</button>
+
+<button id="switchBtn" onclick="switchCamera()" style="display:none;">Switch Camera</button>
+<button id="startBtn" onclick="startScanning()" style="display:none;">Start QR Scan</button>
+<button id="stopBtn" onclick="stopScanning()" style="display:none;">Stop Scan</button>
 
 <div id="reader"></div>
 
@@ -95,20 +96,18 @@ let cameraIndex=0;
 let scanning=false;
 let formURL="";
 
-/* Date Time */
+/* Live Date Time */
 
 function updateDateTime(){
-
 document.getElementById("datetime").innerText =
 new Date().toLocaleString();
-
 }
 
 setInterval(updateDateTime,1000);
 updateDateTime();
 
 
-/* Parse QR data */
+/* Parse QR */
 
 function parseData(text){
 
@@ -117,7 +116,6 @@ let parts=text.trim().split(/\s+/);
 let roll=parts[0];
 let dept=parts[1];
 let year=parts[parts.length-1];
-
 let name=parts.slice(2,parts.length-1).join(" ");
 
 return{
@@ -160,6 +158,12 @@ break;
 
 startCamera(cameraIndex);
 
+/* show buttons */
+
+document.getElementById("switchBtn").style.display="inline-block";
+document.getElementById("startBtn").style.display="inline-block";
+document.getElementById("stopBtn").style.display="inline-block";
+
 }
 
 });
@@ -167,17 +171,21 @@ startCamera(cameraIndex);
 }
 
 
-/* Start camera stream */
+/* Start camera */
 
 function startCamera(index){
 
 html5QrCode.start(
+
 cameras[index].id,
+
 {
 fps:10,
 qrbox:250
 },
-()=>{}  /* empty callback until scan starts */
+
+()=>{}
+
 );
 
 }
@@ -206,8 +214,6 @@ startCamera(cameraIndex);
 
 function startScanning(){
 
-if(!html5QrCode) return;
-
 if(scanning) return;
 
 scanning=true;
@@ -232,14 +238,13 @@ onScanSuccess
 }
 
 
-/* Stop scan */
+/* Stop scanning */
 
 function stopScanning(){
 
 if(html5QrCode){
 
 html5QrCode.stop();
-
 scanning=false;
 
 }
@@ -247,7 +252,7 @@ scanning=false;
 }
 
 
-/* QR detected */
+/* QR success */
 
 function onScanSuccess(decodedText){
 
@@ -256,8 +261,6 @@ navigator.vibrate(200);
 stopScanning();
 
 let data=parseData(decodedText);
-
-/* preview */
 
 document.getElementById("roll").innerText=data.roll;
 document.getElementById("dept").innerText=data.dept;
@@ -276,7 +279,7 @@ formURL=
 }
 
 
-/* Open Google Form */
+/* Open form */
 
 function openForm(){
 

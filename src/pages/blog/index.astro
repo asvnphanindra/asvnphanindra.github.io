@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="Blog — ASVN Phanindra" description="Notes and updates.">
+  <section class="page-intro reveal">
+    <h1>Blog</h1>
+    <p class="lede">Short notes and updates.</p>
+  </section>
+
+  <section class="section reveal" style="--reveal-delay: 80ms">
+    {
+      posts.length === 0 ? (
+        <p class="empty">No posts yet.</p>
+      ) : (
+        <ul class="post-list post-list--rich">
+          {posts.map((post) => (
+            <li>
+              <a class="post-row" href={`/blog/${post.slug}/`}>
+                <span class="post-row-title">{post.data.title}</span>
+                <span class="post-row-copy">{post.data.description}</span>
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </time>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>

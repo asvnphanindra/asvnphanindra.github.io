@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { products } from '../data/products';
+---
+
+<BaseLayout title="Products — ASVN Phanindra" description="Products and projects.">
+  <section>
+    <h1>Products</h1>
+    <p class="lede">Selected tools, courses, and research code.</p>
+    <ul class="card-list">
+      {
+        products.map((product) => (
+          <li>
+            <a href={product.href} target="_blank" rel="noopener noreferrer">
+              <strong>{product.name}</strong>
+            </a>
+            <p>{product.oneLiner}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

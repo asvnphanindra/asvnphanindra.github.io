@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { featuredProducts } from '../data/products';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const latest = posts.slice(0, 3);
+---
+
+<BaseLayout title="ASVN Phanindra — Home">
+  <section>
+    <h1>Home</h1>
+    <p class="lede">
+      I build AI products and teaching tools, with research interests in O-RAN and ISAC.
+    </p>
+  </section>
+
+  <section>
+    <h2>Featured products</h2>
+    <ul class="card-list">
+      {
+        featuredProducts.map((product) => (
+          <li>
+            <a href={product.href} target="_blank" rel="noopener noreferrer">
+              <strong>{product.name}</strong>
+            </a>
+            <p>{product.oneLiner}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p><a href="/products">All products →</a></p>
+  </section>
+
+  <section>
+    <h2>Latest posts</h2>
+    {
+      latest.length === 0 ? (
+        <p class="empty">No posts yet.</p>
+      ) : (
+        <ul class="post-list">
+          {latest.map((post) => (
+            <li>
+              <a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+              <time datetime={post.data.pubDate.toISOString()}>
+                {post.data.pubDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>

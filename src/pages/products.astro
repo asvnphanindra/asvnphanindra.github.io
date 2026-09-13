@@ -4,17 +4,26 @@ import { products } from '../data/products';
 ---
 
 <BaseLayout title="Products — ASVN Phanindra" description="Products and projects.">
-  <section>
+  <section class="page-intro reveal">
     <h1>Products</h1>
     <p class="lede">Selected tools, courses, and research code.</p>
-    <ul class="card-list">
+  </section>
+
+  <section class="section reveal" style="--reveal-delay: 80ms">
+    <ul class="product-grid product-grid--full">
       {
         products.map((product) => (
           <li>
-            <a href={product.href} target="_blank" rel="noopener noreferrer">
-              <strong>{product.name}</strong>
+            <a
+              class="product-card"
+              href={product.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="product-card-name">{product.name}</span>
+              <span class="product-card-copy">{product.oneLiner}</span>
+              <span class="product-card-cta">Open</span>
             </a>
-            <p>{product.oneLiner}</p>
           </li>
         ))
       }

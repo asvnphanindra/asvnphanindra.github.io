@@ -2,7 +2,8 @@
 
 **Purpose:** Design aid for updating `asvnphanindra.github.io`.  
 **Reference only:** [prathosh.in](https://prathosh.in/index.html) — borrow *structure and principles*, not copy, layout, wording, verse, colors, or branding.  
-**Status:** Plan only — do not implement until asked.
+**Status:** Plan only — do not implement until asked.  
+**How to work:** follow [`workspace/PIPELINE.md`](../workspace/PIPELINE.md) (facts → content card → site only when asked).
 
 ---
 

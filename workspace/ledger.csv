@@ -1,0 +1,2 @@
+path,role,created_date,created_by,source_inputs,purpose,status
+"workspace/outbox/20260921_hero-sync_by-cursor.md",outbox,2026-09-21,cursor,"workspace/content_cards/hero.md; workspace/inbox/20260921_hero-name-role_by-human.md","Synced validated hero copy to live site",synced

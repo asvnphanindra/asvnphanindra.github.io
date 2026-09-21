@@ -9,13 +9,18 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 const latest = posts.slice(0, 3);
 ---
 
-<BaseLayout title="ASVN Phanindra — Home">
+<BaseLayout title="Sri Venkata Naga Phanindra Akula — Home">
   <section class="hero reveal">
-    <p class="hero-brand">ASVN Phanindra</p>
-    <h1 class="hero-title">Building AI products, teaching tools, and O-RAN research.</h1>
-    <p class="hero-lede">
-      Selected courses, simulators, and classroom software — plus short notes from the work.
+    <p class="hero-brand">Sri Venkata Naga Phanindra Akula</p>
+    <p class="hero-role">
+      Faculty · Dr. RVR NRI Institute of Technology (Deemed to be University)
     </p>
+    <p class="hero-secondary">
+      Educator · Technologist · Research Scientist · AI Product Developer
+    </p>
+    <h1 class="hero-title">
+      ISAC, O-RAN, and AI — research that becomes tools and teaching.
+    </h1>
     <div class="hero-actions">
       <a class="btn btn-primary" href="/products">View products</a>
       <a class="btn btn-ghost" href="/blog">Read the blog</a>

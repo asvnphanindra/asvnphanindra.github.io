@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { products } from '../data/products';
 ---
 
 <BaseLayout title="Products — Sri Venkata Naga Phanindra Akula" description="Products and projects.">
@@ -10,23 +9,6 @@ import { products } from '../data/products';
   </section>
 
   <section class="section reveal" style="--reveal-delay: 80ms">
-    <ul class="product-grid product-grid--full">
-      {
-        products.map((product) => (
-          <li>
-            <a
-              class="product-card"
-              href={product.href}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span class="product-card-name">{product.name}</span>
-              <span class="product-card-copy">{product.oneLiner}</span>
-              <span class="product-card-cta">Open</span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <p class="empty">No products listed yet.</p>
   </section>
 </BaseLayout>
